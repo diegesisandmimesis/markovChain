@@ -2,6 +2,15 @@
 // markovChain.h
 //
 
+#include "intMath.h"
+#ifndef INT_MATH_H
+#error "This module requires the intMath module."
+#error "https://github.com/diegesisandmimesis/intMath"
+#error "It should be in the same parent directory as this module.  So if"
+#error "markovChain is in /home/user/tads/markovChain, then"
+#error "intMath should be in /home/user/tads/intMath ."
+#endif // INT_MATH_H
+
 #include "simpleGraph.h"
 #ifndef SIMPLE_GRAPH_H
 #error "This module requires the simpleGraph module."
@@ -20,7 +29,7 @@
 #error "notReallyRandom should be in /home/user/tads/notReallyRandom ."
 #endif // NOT_REALLY_RANDOM_H
 
-MarkovChain template '_currentNode';
+MarkovChain template '_currentStateID'? @_currentState?;
 MarkovState template 'id'?;
 MarkovTransition template ->_vertex1 +_length?;
 

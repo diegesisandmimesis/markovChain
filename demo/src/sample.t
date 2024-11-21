@@ -48,10 +48,10 @@ gameMain: GameMainDef
 startRoom: Room 'Void' "This is a featureless void.";
 +me: Person;
 
-myChain: MarkovChain 'foo';
+myChain: MarkovChain @foo;
 +foo: MarkovState 'foo';
-++MarkovTransition ->bar +300;
-++MarkovTransition ->baz +100;
+++MarkovTransition ->bar +0.75;
+++MarkovTransition ->baz +0.25;
 +bar: MarkovState 'bar';
 ++MarkovTransition ->foo +300;
 ++MarkovTransition ->baz +100;
@@ -65,8 +65,7 @@ DefineSystemAction(Foozle)
 
 		id = myChain.pickTransition();
 
-		"New node is <<toString(id)>>.\n ";
-		//myChain.log();
+		"New state is <<toString(id)>>.\n ";
 	}
 ;
 VerbRule(Foozle) 'foozle': FoozleAction verbPhrase = 'foozle/foozling';

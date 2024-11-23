@@ -56,6 +56,8 @@
 #include <adv3.h>
 #include <en_us.h>
 
+#include "markovChain.h"
+
 // Module ID for the library
 markovChainModuleID: ModuleID {
         name = 'Markov Chain Library'

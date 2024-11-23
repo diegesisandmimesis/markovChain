@@ -29,6 +29,19 @@
 #error "notReallyRandom should be in /home/user/tads/notReallyRandom ."
 #endif // NOT_REALLY_RANDOM_H
 
+#ifdef LINTER
+#ifdef __DEBUG
+#include "linter.h"
+#ifndef LINTER_H
+#error "This module requires the linter module."
+#error "https://github.com/diegesisandmimesis/linter"
+#error "It should be in the same parent directory as this module.  So if"
+#error "markovChain is in /home/user/tads/markovChain, then"
+#error "linter should be in /home/user/tads/linter ."
+#endif // LINTER_H
+#endif // __DEBUG
+#endif // LINTER
+
 MarkovChain template '_currentStateID'? @_currentState?;
 MarkovState template 'id'?;
 MarkovTransition template ->_vertex1 +_length?;

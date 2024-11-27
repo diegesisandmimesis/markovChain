@@ -8,6 +8,5 @@
 -lib intMath/intMath
 -lib simpleGraph/simpleGraph
 -lib notReallyRandom/notReallyRandom
--lib linter/linter
 -lib ../markovChain
 -source src/sample.t

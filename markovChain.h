@@ -46,5 +46,6 @@ MarkovChain template '_currentStateID'? @_currentState?;
 MarkovState template 'id'?;
 MarkovTransition template ->_vertex1 +_length?;
 
+MarkovChain template @_markovStateList @_markovMatrix ->_markovIV?;
 
 #define MARKOV_CHAIN_H

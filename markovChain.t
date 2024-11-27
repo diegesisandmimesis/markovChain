@@ -53,6 +53,39 @@
 //		id = myChain.pickTransition();
 //
 //
+// ALTERNATE SYNTAX
+//
+//	A Markov chain can also be declared using a state list, probability
+//	matrix, and optional initialization vector:
+//
+//		// Chain declaration
+//		myChain: MarkovChain
+//			@[	'foo',	'bar',	'baz'	]
+//			@[
+//				0,	0.75,	0.25,
+//				0.67,	0,	0.33,
+//				0.5,	0.5,	0
+//			]
+//			->[	0.34,	0.34,	0.32	]
+//
+//	This creates a MarkovChain consisting of three states, "foo", "bar",
+//	and "baz".  The transition probabilities are:
+//
+//		From		To	Probability
+//		-----		-----	-----
+//		foo		bar	75%
+//		foo		baz	25%
+//
+//		bar		foo	67%
+//		bar		baz	33%
+//
+//		baz		foo	50%
+//		baz		bar	50%
+//
+//	The chain will have an intial state of "foo" 34% of the time, "bar"
+//	34% of the time, and "baz" 32% of the time.
+//
+//
 #include <adv3.h>
 #include <en_us.h>
 
@@ -66,11 +99,23 @@ markovChainModuleID: ModuleID {
         listingOrder = 99
 }
 
+markovChainPreinit: PreinitObject
+	execute() {
+		forEachInstance(MarkovChain, { x: x.initializeMarkovChain() });
+	}
+;
+
 // The base Markov chain object is a directed graph.
 class MarkovChain: SimpleGraphDirected
 	// Our bespoke vertex and edge classes.
 	vertexClass = MarkovState
 	edgeClass = MarkovTransition
+
+	baseWeight = 1000
+
+	_markovStateList = nil
+	_markovMatrix = nil
+	_markovIV = nil
 
 	// Keep track of the chain's current state (which is just a
 	// vertex in the graph).
@@ -79,6 +124,77 @@ class MarkovChain: SimpleGraphDirected
 
 	// Optional PRNG instance to use for rolling for transitions.
 	_prng = nil
+
+	initializeMarkovChain() {
+		if(!_initializeMarkovStateList()) return;
+		if(!_initializeMarkovMatrix()) return;
+		if(!_initializeMarkovIV()) return;
+	}
+
+	_initializeMarkovStateList() {
+		if(_markovStateList == nil) return(nil);
+		_markovStateList.forEach({ x: addVertex(x) });
+		return(true);
+	}
+
+	_initializeMarkovMatrix() {
+		local l;
+
+		if(_markovMatrix == nil) return(nil);
+		l = _markovStateList.length;
+		if(_markovMatrix.length != (l * l)) return(nil);
+		_markovMatrix = _markovProbabilityToWeight(_markovMatrix);
+
+		_initMarkovEdges();
+
+		return(true);
+	}
+
+	_initializeMarkovIV(prng?) {
+		if(_markovIV == nil) {
+			_currentStateID = _markovStateList[1];
+			return(true);
+		}
+		if(_markovIV.length != _markovStateList.length) return(nil);
+		_markovIV = _markovProbabilityToWeight(_markovIV);
+		_currentStateID = randomElementWeighted(_markovStateList,
+			_markovIV, (prng ? prng : _prng));
+
+		return(true);
+	}
+
+	_initMarkovEdges() {
+		local i, j, l, off, v;
+
+		l = _markovStateList.length;
+		for(j = 1; j <= l; j++) {
+			off = (j - 1) * l;
+			for(i = 1; i <= l; i++) {
+				v = _markovMatrix[off + i];
+				_initMarkovEdge(_markovStateList[j],
+					_markovStateList[i], v);
+			}
+		}
+	}
+
+	_initMarkovEdge(id0, id1, w) {
+		if((w == nil) || (w <= 0)) return;
+		addEdge(id0, id1, nil, nil, w);
+	}
+
+	_markovProbabilityToWeight(v) {
+		local r;
+
+		if((v == nil) || !v.length) return(nil);
+		r = new Vector(v.length);
+		v.forEach(function(o) {
+			if((o != nil) && (o > 0) && (o < 1))
+				o = toIntegerSafe(o * baseWeight);
+			r.append(o);
+		});
+
+		return(r);
+	}
 
 	setPRNG(v) { _prng = v; }
 
